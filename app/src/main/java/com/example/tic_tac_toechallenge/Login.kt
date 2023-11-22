@@ -47,9 +47,9 @@ fun LoginScreen() {
                 onClick = { /* Handle login with Google */ },
                 modifier = Modifier
                     .fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(Color.Gray)
+                colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
             ) {
-                Text(text = "Login with Google", color = Color.White)
+                Text(text = "Login with Google", color = Color(0xFF053B50))
                 Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
                 Image(
                     painter = painterResource(id = R.drawable.googlelogo),
