@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Tic-Tac-Toe Challenge</string>
+        <string name="DEFAULT_WEB_CLIENT_ID">350898235135-6sqkhu5vsqk4ai4d1nua5nmlrpbjl1nv.apps.googleusercontent.com</string>
+
 </resources>
