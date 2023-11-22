@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.tic_tac_toechallenge.R
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 @Composable
@@ -46,9 +47,24 @@ fun LoginScreen() {
                 onClick = { /* Handle login with Google */ },
                 modifier = Modifier
                     .fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(Color.Gray)
             ) {
-                Text(text = "Login with Google")
+                Text(text = "Login with Google", color = Color.White)
+                Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+                Image(
+                    painter = painterResource(id = R.drawable.googlelogo),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    TicTacToeChallengeTheme {
+        LoginScreen()
     }
 }
