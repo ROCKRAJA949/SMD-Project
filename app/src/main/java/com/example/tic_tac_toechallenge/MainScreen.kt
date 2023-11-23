@@ -39,6 +39,13 @@ fun MainScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.gamelogo),
+                contentDescription = null,
+                modifier = Modifier.size(250.dp),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(30.dp))
             //Find a Match
             Button(
                 onClick =  {},
@@ -56,6 +63,7 @@ fun MainScreen() {
                 Text(text = "Find a match", color = Color(0xFF053B50))
             }
             //Profile
+            Spacer(modifier = Modifier.height(18.dp))
             Button(
                 onClick =  {},
                 modifier = Modifier
@@ -72,6 +80,7 @@ fun MainScreen() {
                 Text(text = "Profile", color = Color(0xFF053B50))
             }
             //Friends List
+            Spacer(modifier = Modifier.height(18.dp))
             Button(
                 onClick =  {},
                 modifier = Modifier
@@ -88,6 +97,7 @@ fun MainScreen() {
                 Text(text = "Friends List", color = Color(0xFF053B50))
             }
             //Exit
+            Spacer(modifier = Modifier.height(18.dp))
             Button(
                 onClick =  {},
                 modifier = Modifier
