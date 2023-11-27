@@ -9,6 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -55,7 +57,7 @@ fun TicTacToeBoard() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally // Center horizontally
     ) {
         for (i in 0 until 3) {
@@ -64,19 +66,20 @@ fun TicTacToeBoard() {
     }
 }
 
-
 @Composable
 fun TicTacToeRow() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.Center, // Center horizontally
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        for (j in 0 until 3) {
-            TicTacToeButton()
-        }
+        TicTacToeButton()
+        Spacer(modifier = Modifier.width(8.dp)) // Add spacing between buttons
+        TicTacToeButton()
+        Spacer(modifier = Modifier.width(8.dp)) // Add spacing between buttons
+        TicTacToeButton()
     }
 }
 
@@ -85,12 +88,38 @@ fun TicTacToeButton() {
     Button(
         onClick = { /* Handle button click */ },
         modifier = Modifier
-            .size(50.dp)
-            .clip(RoundedCornerShape(0.dp))
+            .size(80.dp) // Increase the button size
+            .clip(RoundedCornerShape(4.dp)), // Add rounded corners
+        colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
     ) {
         // You can customize the content of the button here
         // For example, you can use icons like Icons.Default.Clear and Icons.Default.Close for X and O
-        Icon(imageVector = Icons.Default.Clear, contentDescription = null)
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = null,
+            modifier = Modifier.size(40.dp),
+            tint = Color.Red
+
+            //Icons for x and o
+            /*
+                For 'O':
+                Icon(
+                imageVector = Icons.Default.Clear,
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = Color(0xFF053B50)
+                )
+
+                For 'X':
+                Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = Color(0xFF053B50)
+                )
+            */
+
+        )
     }
 }
 
