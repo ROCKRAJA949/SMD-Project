@@ -1,6 +1,7 @@
 package com.example.tic_tac_toechallenge
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,7 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 @Composable
-fun MainScreen() {
+fun MainScreen(userData: UserData?, onSignOut:() -> Unit) {
+    Log.d("userData", userData.toString())
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +101,7 @@ fun MainScreen() {
             //Exit
             Spacer(modifier = Modifier.height(18.dp))
             Button(
-                onClick =  {},
+                onClick =  onSignOut,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -121,6 +123,6 @@ fun MainScreen() {
 @Composable
 fun MainScreenPreview() {
     TicTacToeChallengeTheme {
-        MainScreen()
+//        MainScreen()
     }
 }
