@@ -94,6 +94,7 @@ fun TicTacToeButton() {
     ) {
         // You can customize the content of the button here
         // For example, you can use icons like Icons.Default.Clear and Icons.Default.Close for X and O
+        /*
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = null,
@@ -120,6 +121,7 @@ fun TicTacToeButton() {
             */
 
         )
+        */
     }
 }
 
