@@ -52,6 +52,13 @@ class MainActivity : ComponentActivity() {
                             val viewModel = viewModel<SignInViewModel> ()
                             val state by viewModel.state.collectAsStateWithLifecycle()
 
+                            LaunchedEffect(key1 = Unit ){
+                                if(googleAuthUiClient.getSignedInUser() != null){
+                                    navController.navigate("mainMenu")
+                                }
+                            }
+
+
                             val launcher = rememberLauncherForActivityResult(
                                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                                 onResult = { result ->
@@ -70,10 +77,14 @@ class MainActivity : ComponentActivity() {
                                 if(state.isSignInSuccessful) {
                                     Toast.makeText(
                                         applicationContext,
-                                        "Sign in successful",
+                                        "Sign in: "+ googleAuthUiClient.getSignedInUser()?.username,
                                         Toast.LENGTH_LONG
                                     ).show()
+
+                                    navController.navigate("mainMenu");
+                                    viewModel.resetState()
                                 }
+
                             }
                             
                             LoginScreen(
@@ -86,6 +97,23 @@ class MainActivity : ComponentActivity() {
                                                 signInIntentSender?: return@launch
                                             ).build()
                                         )
+                                    }
+                                }
+                            )
+                        }
+                        composable("mainMenu") {
+                            MainScreen(
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onSignOut = {
+                                    lifecycleScope.launch {
+                                        googleAuthUiClient.signOut();
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Signed Out",
+                                            Toast.LENGTH_LONG
+                                        ).show();
+
+                                        navController.popBackStack();
                                     }
                                 }
                             )
