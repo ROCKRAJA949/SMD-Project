@@ -1,8 +1,9 @@
-package com.example.tic_tac_toechallenge
+package com.example.tic_tac_toechallenge.presentation.sign_in
 
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import com.example.tic_tac_toechallenge.R
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -72,7 +73,7 @@ class GoogleAuthUIClient (
         }
     }
 
-    fun getSignedInUser():UserData? = auth.currentUser?.run {
+    fun getSignedInUser(): UserData? = auth.currentUser?.run {
         UserData(
             userId = uid,
             username = displayName,
