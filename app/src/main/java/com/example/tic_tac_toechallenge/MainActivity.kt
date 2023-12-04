@@ -11,21 +11,28 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tic_tac_toechallenge.presentation.LoginScreen
+import com.example.tic_tac_toechallenge.presentation.MainScreen
+import com.example.tic_tac_toechallenge.presentation.authentication.AuthViewModel
+import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
+import com.example.tic_tac_toechallenge.presentation.sign_in.SignInViewModel
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.launch
+
+
 
 class MainActivity : ComponentActivity() {
 
@@ -35,6 +42,20 @@ class MainActivity : ComponentActivity() {
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
+
+//testing things ples ignore
+    private val authViewModel: AuthViewModel by viewModels()
+    private val signInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            val account = task.getResult(ApiException::class.java)
+            if (account != null) {
+                val idToken = account.idToken
+                if (idToken != null) {
+                    authViewModel.signInWithGoogle(idToken)
+                }
+            }
+        }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +119,9 @@ class MainActivity : ComponentActivity() {
                                             ).build()
                                         )
                                     }
-                                }
+                                },
+                                authViewModel = authViewModel,
+                                signInLauncher = signInLauncher
                             )
                         }
                         composable("mainMenu") {
