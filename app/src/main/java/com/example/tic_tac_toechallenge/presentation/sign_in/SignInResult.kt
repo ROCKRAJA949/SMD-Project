@@ -9,5 +9,8 @@ data class SignInResult(
 data class UserData(
     val userId: String,
     val username: String?,
-    val profilePictureUrl: String?
+    val email: String?,
+    val profilePictureUrl: String?,
+    val winCount: Number?,
+    val friends: List<UserData>?,
 )
