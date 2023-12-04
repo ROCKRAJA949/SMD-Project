@@ -1,14 +1,19 @@
 package com.example.tic_tac_toechallenge.presentation.sign_in
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Log
+import android.widget.Toast
 import com.example.tic_tac_toechallenge.R
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
@@ -20,6 +25,8 @@ class GoogleAuthUIClient (
 
     ){
     private val auth = Firebase.auth
+    private val db = Firebase.firestore
+    private val usersDb = FirebaseFirestore.getInstance().collection("users")
 
     suspend fun signIn():IntentSender? {
         val result = try {
@@ -40,13 +47,45 @@ class GoogleAuthUIClient (
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         return try {
-            val user = auth.signInWithCredential(googleCredentials).await().user
+            var authResult = auth.signInWithCredential(googleCredentials).await()
+            val user = authResult.user
+            if(authResult.additionalUserInfo?.isNewUser == true) {
+
+                val newUser =
+                    user?.run {
+                        UserData(
+                            userId = uid,
+                            username = displayName,
+                            email = email,
+                            profilePictureUrl = photoUrl?.toString(),
+                            winCount = 0,
+                            friends = null
+                        )
+                    }
+
+                if (newUser != null) {
+                    db.collection("users").document(user.uid).set(newUser)
+                        .addOnSuccessListener{
+                            Toast.makeText(context, "User added successfully!", Toast.LENGTH_SHORT).show()
+                        }.addOnFailureListener { e ->
+                            Toast.makeText(context, "Exception: $e", Toast.LENGTH_SHORT).show()
+                        }
+//                    usersDb.add(newUser).addOnSuccessListener{
+//                        Toast.makeText(context, "User added successfully!", Toast.LENGTH_SHORT).show()
+//                    }.addOnFailureListener { e ->
+//                        Toast.makeText(context, "Exception: $e", Toast.LENGTH_SHORT).show()
+//                    }
+                }
+            }
             SignInResult(
                 data = user?.run {
                     UserData(
                         userId = uid,
                         username = displayName,
-                        profilePictureUrl = photoUrl?.toString()
+                        email = email,
+                        profilePictureUrl = photoUrl?.toString(),
+                        winCount = null,
+                        friends = null
                     )
                 },
                 errorMessage = null
@@ -73,11 +112,15 @@ class GoogleAuthUIClient (
         }
     }
 
+
     fun getSignedInUser(): UserData? = auth.currentUser?.run {
         UserData(
             userId = uid,
             username = displayName,
-            profilePictureUrl = photoUrl?.toString()
+            email = email,
+            profilePictureUrl = photoUrl?.toString(),
+            winCount = null,
+            friends = null,
         )
     }
 
