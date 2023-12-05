@@ -1,7 +1,11 @@
 package com.example.tic_tac_toechallenge
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,96 +25,150 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
+import androidx.compose.ui.unit.sp
+
+//import com.google.mlkit.vision.text.Text
 
 
 @Composable
-fun Profile()
-{
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        // verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-        //.padding(16.dp)
-    ) {
-        item {
-            // Top Bar
-            TopBar()
-            Spacer(modifier = Modifier.height(30.dp))
-
-            PlayerWinsRectangle()
-            Spacer(modifier = Modifier.height(30.dp))
-            PlayerLossesRectangle()
-
-
-        }
-    }
-}
-
-@Composable
-fun TopBar() {
+fun TestRun() {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back",
-            modifier = Modifier
-                .size(24.dp)
-                .background(Color.White)
-        )
-
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
-
-                .background(
-                    MaterialTheme.colorScheme.primary
-                    //painter = painterResource(id = R.drawable.bg)
-
-                ),
-
-            verticalAlignment = Alignment.CenterVertically
-
+                .height(100.dp),
+            contentAlignment = Alignment.Center
         ) {
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-
-            // User Image
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground), // Replace with actual user image
-                contentDescription = null,
+                painter = painterResource(id = R.drawable.bg),
                 modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onPrimary)
-                    .padding(8.dp)
+                    .fillMaxSize()
+                    .height(100.dp),
+
+                contentDescription = "Background Image",
+                contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Image(
+                painter = painterResource(id = R.drawable.backbutton),
+                modifier = Modifier
+                    .width(47.dp)
+                    .height(47.dp)
+                    .padding(8.dp)
+                    .align(Alignment.TopStart)
+                    .clickable{println("Back Button Clicked")},
 
-            // User Name
-            Text(
-                text = "User Name", // Replace with actual user name
-                //style = MaterialTheme.typography.h6,//
+                contentDescription = "Back Button Image",
+                contentScale = ContentScale.Crop
+            )
+
+
+            Row()
+            {
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher_foreground), // Replace with actual user image
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        //.background(MaterialTheme.colorScheme.onPrimary)
+                        //.padding(8.dp)
+                        .border(1.dp, Color.Red, CircleShape),
+                    //.align(Alignment.BottomStart)
+                    //.padding(20.dp)
+
+                )
+            }
+
+
+
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        PlayerWins(10)
+        PlayerLosses(10)
+    }
+
+}
+
+
+@Composable
+fun PlayerWins(Wins: Int) {
+    Spacer(modifier = Modifier.height(40.dp))
+    Row(
+
+        modifier = Modifier
+            .size(300.dp, 100.dp) // Adjust the size of the rectangle
+            .background(
+                color = Color.LightGray, // Change the color as needed
+                shape = RoundedCornerShape(6.dp) // Adjust the corner radius as needed
+            )
+            .shadow(1.dp),
+            //.padding(2.dp), // Optional: Add padding to the rectangle
+        //horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+
+    ) {
+
+
+        Image(
+            painter = painterResource(id = R.drawable.trophee),
+            contentDescription = "Winner Trophy",
+            modifier = Modifier.height(60.dp)
+        )
+
+        // Player Wins
+        Text(
+
+            text = "WINS", // Replace with actual wins count
+            //style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            fontSize  = 40.sp,
+
+            modifier = Modifier
+                .padding(8.dp)
+
+            //.align(Alignment.Center)
+
+
+        )
+        Box(
+
+
+        )
+        {
+            Image(
+                painter = painterResource(id = R.drawable.circle),
+                contentDescription = "Winner Trophy",
+                        modifier = Modifier.height(80.dp)
+            )
+            Text(text = "$Wins",
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary
+                fontSize = 25.sp,
+                modifier = Modifier.align(Alignment.Center)
+
             )
         }
+
+
     }
 }
 
-@Composable
-fun PlayerWinsRectangle() {
 
-    Box(
+@Composable
+fun PlayerLosses(Loss: Int) {
+    Spacer(modifier = Modifier.height(40.dp))
+    Row(
 
         modifier = Modifier
             .size(300.dp, 100.dp) // Adjust the size of the rectangle
@@ -123,59 +176,58 @@ fun PlayerWinsRectangle() {
                 color = Color.LightGray, // Change the color as needed
                 shape = RoundedCornerShape(6.dp) // Adjust the corner radius as needed
             )
-            .shadow(1.dp)
-            .padding(16.dp) // Optional: Add padding to the rectangle
-
+            .shadow(1.dp),
+        //.padding(2.dp), // Optional: Add padding to the rectangle
+        //horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
 
     ) {
+
+
+        Image(
+            painter = painterResource(id = R.drawable.thumbsdown),
+            contentDescription = "Thumbs Down - Losses",
+            modifier = Modifier.height(60.dp)
+        )
 
         // Player Wins
         Text(
 
-            text = "Player Wins: 10", // Replace with actual wins count
+            text = "LOSSES", // Replace with actual wins count
             //style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Bold,
+            color = Color.White,
+            fontSize  = 40.sp,
+
             modifier = Modifier
                 .padding(8.dp)
-                .align(Alignment.Center)
+
+            //.align(Alignment.Center)
 
 
         )
-    }
-}
+        Box(
 
-@Composable
-fun PlayerLossesRectangle() {
 
-    Box(
-
-        modifier = Modifier
-            .size(300.dp, 100.dp) // Adjust the size of the rectangle
-            .background(
-                color = Color.LightGray, // Change the color as needed
-                shape = RoundedCornerShape(6.dp) // Adjust the corner radius as needed
+        )
+        {
+            Image(
+                painter = painterResource(id = R.drawable.circlered),
+                contentDescription = "Circle Red - Losses",
+                modifier = Modifier.height(80.dp)
             )
-            .shadow(1.dp)
-            .padding(16.dp) // Optional: Add padding to the rectangle
+            Text(text = "$Loss",
+                fontWeight = FontWeight.Bold,
+                fontSize = 25.sp,
+                modifier = Modifier.align(Alignment.Center)
+
+            )
+        }
 
 
-    ) {
-
-        // Player Wins
-        Text(
-
-            text = "Player Losses: 5", // Replace with actual wins count
-            //style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.Center)
-
-
-        )
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
