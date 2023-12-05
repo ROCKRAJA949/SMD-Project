@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -28,75 +29,114 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 //import com.google.mlkit.vision.text.Text
 
-
 @Composable
-fun TestRun() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        Box(
+fun Profile() {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.xando),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+
+
+        Image(
+            painter = painterResource(id = R.drawable.backbutton),
             modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            contentAlignment = Alignment.Center
-        ) {
+                .width(47.dp)
+                .height(47.dp)
+                .padding(8.dp)
+                .align(Alignment.TopStart)
+                .clickable { println("Back Button Clicked") },
 
-            Image(
-                painter = painterResource(id = R.drawable.bg),
+            contentDescription = "Back Button Image",
+            contentScale = ContentScale.Crop
+        )
+
+
+        Column (
+            modifier = Modifier.fillMaxWidth()
+        ){
+
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .height(100.dp),
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
 
-                contentDescription = "Background Image",
-                contentScale = ContentScale.Crop
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.backbutton),
-                modifier = Modifier
-                    .width(47.dp)
-                    .height(47.dp)
-                    .padding(8.dp)
-                    .align(Alignment.TopStart)
-                    .clickable{println("Back Button Clicked")},
-
-                contentDescription = "Back Button Image",
-                contentScale = ContentScale.Crop
-            )
-
-
-            Row()
-            {
-
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground), // Replace with actual user image
-                    contentDescription = null,
                     modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        //.background(MaterialTheme.colorScheme.onPrimary)
-                        //.padding(8.dp)
-                        .border(1.dp, Color.Red, CircleShape),
-                    //.align(Alignment.BottomStart)
-                    //.padding(20.dp)
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(Color(0xFF176B87)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
 
-                )
+                    ) {
+
+
+
+                    //Spacer(modifier = Modifier.width(16.dp))
+
+                    // TopBar Heading
+                    Text(
+                        text = "PROFILE", // Replace with actual user name
+                        //style = MaterialTheme.typography.h6,//
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 40.sp,
+                        color = Color(0xFFEEEEEE),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(170.dp)
+                            .clip(CircleShape)
+                            .border(5.dp, Color(0xFFEEEEEE), CircleShape),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                PlayerWins(10)
+                PlayerLosses(10)
+                Spacer(modifier = Modifier.height(8.dp)) // Adjust the spacing as needed
             }
-
-
-
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        PlayerWins(10)
-        PlayerLosses(10)
-    }
 
+
+    }
 }
 
 
@@ -106,9 +146,10 @@ fun PlayerWins(Wins: Int) {
     Row(
 
         modifier = Modifier
-            .size(300.dp, 100.dp) // Adjust the size of the rectangle
+            .height(100.dp)
+            .fillMaxWidth()// Adjust the size of the rectangle
             .background(
-                color = Color.LightGray, // Change the color as needed
+                color = Color(0xFFEEEEEE), // Change the color as needed
                 shape = RoundedCornerShape(6.dp) // Adjust the corner radius as needed
             )
             .shadow(1.dp),
@@ -132,7 +173,7 @@ fun PlayerWins(Wins: Int) {
             text = "WINS", // Replace with actual wins count
             //style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = Color(0xFF053B50),
             fontSize  = 40.sp,
 
             modifier = Modifier
@@ -171,9 +212,10 @@ fun PlayerLosses(Loss: Int) {
     Row(
 
         modifier = Modifier
-            .size(300.dp, 100.dp) // Adjust the size of the rectangle
+            .height(100.dp)
+            .fillMaxWidth()// Adjust the size of the rectangle
             .background(
-                color = Color.LightGray, // Change the color as needed
+                color = Color(0xFFEEEEEE), // Change the color as needed
                 shape = RoundedCornerShape(6.dp) // Adjust the corner radius as needed
             )
             .shadow(1.dp),
@@ -197,7 +239,7 @@ fun PlayerLosses(Loss: Int) {
             text = "LOSSES", // Replace with actual wins count
             //style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = Color(0xFF053B50),
             fontSize  = 40.sp,
 
             modifier = Modifier
@@ -228,6 +270,8 @@ fun PlayerLosses(Loss: Int) {
 
     }
 }
+
+
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {

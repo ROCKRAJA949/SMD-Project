@@ -2,7 +2,9 @@ package com.example.tic_tac_toechallenge
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,26 +41,34 @@ import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 @Composable
 fun Friends() {
-
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        // verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-        //.padding(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
-        item {
-            // Top Bar
-            TopBarFriends()
+        Image(
+            painter = painterResource(id = R.drawable.xando),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            // verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+            //.padding(16.dp)
+        ) {
+            item {
+                // Top Bar
+                TopBarFriends()
 
 
-            FriendRow("John Smith")
-            FriendRow("Land Cruiser")
-            FriendRow("Peter McKinnon")
+                FriendRow("John Smith")
+                FriendRow("Land Cruiser")
+                FriendRow("Peter McKinnon")
 
-
-
-
+            }
         }
     }
 }
@@ -67,31 +79,28 @@ fun TopBarFriends() {
     )
     {
 
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back",
+        Image(
+            painter = painterResource(id = R.drawable.backbutton),
             modifier = Modifier
-                .size(24.dp)
-                .background(Color.White)
+                .width(47.dp)
+                .height(47.dp)
+                .padding(8.dp)
+                .clickable { println("Back Button Clicked") },
+
+            contentDescription = "Back Button Image",
+            contentScale = ContentScale.Crop
         )
 
         Row(
 
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .background(
-                    MaterialTheme.colorScheme.primary
-                    //painter = painterResource(id = R.drawable.bg)
-
-                )
-            ,
+                .background(Color(0xFF176B87)),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
 
             ) {
-
-            Spacer(modifier = Modifier.width(100.dp))
-
 
 
 
@@ -103,7 +112,7 @@ fun TopBarFriends() {
                 //style = MaterialTheme.typography.h6,//
                 fontWeight = FontWeight.Bold,
                 fontSize = 40.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = Color(0xFFEEEEEE),
                 textAlign = TextAlign.Center
             )
         }
@@ -112,19 +121,20 @@ fun TopBarFriends() {
 
 @Composable
 fun FriendRow(name: String) {
-    Spacer(modifier = Modifier.height(30.dp))
+    Spacer(modifier = Modifier.height(12.dp))
     Row(
 
         modifier = Modifier
             //.size(300.dp, 100.dp) // Adjust the size of the rectangle
             .fillMaxWidth()
             .background(
-                color = Color.LightGray, // Change the color as needed
+                color = Color(0xFFEEEEEE), // Change the color as needed
                 shape = RoundedCornerShape(6.dp) // Adjust the corner radius as needed
             )
             .shadow(1.dp)
             .padding(20.dp), // Optional: Add padding to the rectangle
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
 
 
     ) {
@@ -142,23 +152,21 @@ fun FriendRow(name: String) {
         //Spacer(modifier = Modifier.width(200.dp))
         // Player Wins
         Text(
-
             text = name, // Replace with actual wins count
             //style = MaterialTheme.typography.subtitle1,
+            color = Color(0xFF053B50),
             fontWeight = FontWeight.Bold,
-            fontSize = 15.sp,
+            fontSize = 22.sp,
             modifier = Modifier
                 //.padding(8.dp)
                 .align(Alignment.CenterVertically)
-
-
         )
 
         Button(
-            onClick = {}
-
-        ){
-            Text(text = "INVITE")
+            onClick =  {},
+            colors = ButtonDefaults.outlinedButtonColors(Color(0xFF053B50))
+        ) {
+            Text(text = "Invite", color = Color(0xFFEEEEEE))
         }
     }
 }
