@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 @Composable
-fun Friends() {
+fun Friends(onBack:() -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +61,7 @@ fun Friends() {
         ) {
             item {
                 // Top Bar
-                TopBarFriends()
+                TopBarFriends(onBack)
 
 
                 FriendRow("John Smith")
@@ -74,7 +74,7 @@ fun Friends() {
 }
 
 @Composable
-fun TopBarFriends() {
+fun TopBarFriends(onBack: () -> Unit) {
     Column(
     )
     {
@@ -85,7 +85,7 @@ fun TopBarFriends() {
                 .width(47.dp)
                 .height(47.dp)
                 .padding(8.dp)
-                .clickable { println("Back Button Clicked") },
+                .clickable { onBack() },
 
             contentDescription = "Back Button Image",
             contentScale = ContentScale.Crop
@@ -175,7 +175,7 @@ fun FriendRow(name: String) {
 @Composable
 fun FriendScreenPreview() {
     TicTacToeChallengeTheme {
-        Friends()
+//        Friends()
     }
 }
 

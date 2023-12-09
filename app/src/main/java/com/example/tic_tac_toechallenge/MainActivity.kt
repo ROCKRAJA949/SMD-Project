@@ -20,15 +20,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tic_tac_toechallenge.presentation.GameScreen
 import com.example.tic_tac_toechallenge.presentation.LoginScreen
 import com.example.tic_tac_toechallenge.presentation.MainScreen
+import com.example.tic_tac_toechallenge.presentation.Profile
 import com.example.tic_tac_toechallenge.presentation.authentication.AuthViewModel
 import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
 import com.example.tic_tac_toechallenge.presentation.sign_in.SignInViewModel
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.launch
 
@@ -138,8 +139,36 @@ class MainActivity : ComponentActivity() {
 
                                         navController.popBackStack();
                                     }
+                                },
+                                onProfileClick = {
+                                    navController.navigate("profile");
+                                },
+                                onFriendsClick = {
+                                    navController.navigate("friends");
+                                },
+                                onGameClick = {
+                                    navController.navigate("game")
                                 }
                             )
+                        }
+                        composable("profile") {
+                            Profile(
+                                onBack = {
+
+                                        navController.popBackStack();
+                                }
+
+                            )
+                        }
+                        composable("friends") {
+                            Friends(
+                                onBack = {
+                                    navController.popBackStack();
+                                }
+                            )
+                        }
+                        composable("game") {
+                            GameScreen()
                         }
                     }
 

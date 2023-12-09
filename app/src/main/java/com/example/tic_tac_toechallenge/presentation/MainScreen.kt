@@ -20,7 +20,7 @@ import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 @Composable
-fun MainScreen(userData: UserData?, onSignOut:() -> Unit) {
+fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> Unit, onFriendsClick:() -> Unit, onGameClick: () -> Unit) {
     Log.d("userData", userData.toString())
     Box(
         modifier = Modifier
@@ -50,7 +50,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit) {
             Spacer(modifier = Modifier.height(30.dp))
             //Find a Match
             Button(
-                onClick =  {},
+                onClick =  onGameClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -67,7 +67,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit) {
             //Profile
             Spacer(modifier = Modifier.height(18.dp))
             Button(
-                onClick =  {},
+                onClick =  onProfileClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -84,7 +84,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit) {
             //Friends List
             Spacer(modifier = Modifier.height(18.dp))
             Button(
-                onClick =  {},
+                onClick =  onFriendsClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
