@@ -59,6 +59,7 @@ class GoogleAuthUIClient (
                             email = email,
                             profilePictureUrl = photoUrl?.toString(),
                             winCount = 0,
+                            lossCount = 0,
                             friends = null
                         )
                     }
@@ -85,6 +86,7 @@ class GoogleAuthUIClient (
                         email = email,
                         profilePictureUrl = photoUrl?.toString(),
                         winCount = null,
+                        lossCount = null,
                         friends = null
                     )
                 },
@@ -120,6 +122,7 @@ class GoogleAuthUIClient (
             email = email,
             profilePictureUrl = photoUrl?.toString(),
             winCount = null,
+            lossCount = null,
             friends = null,
         )
     }
