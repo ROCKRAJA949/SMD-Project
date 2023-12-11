@@ -1,6 +1,7 @@
 package com.example.tic_tac_toechallenge.presentation
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,14 +44,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.tic_tac_toechallenge.R
+import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
+import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 //import com.google.mlkit.vision.text.Text
 
 @Composable
 fun Profile(userData: UserData?,onBack:()->Unit) {
+    var userDataAPI by remember { mutableStateOf<UserResponseModel?>(null) }
+    LaunchedEffect(userData) {
+        val id = userData?.userId
+        if (id != null) {
+            fetchData(id) {result ->
+                result.onSuccess {
+                    userDataAPI = it
+                    Log.d("received User Data",userDataAPI.toString())
+                }
+                result.onFailure { error ->
+                    Log.d("api Get failure", error.toString())
+                }
 
+            }
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -136,8 +163,8 @@ fun Profile(userData: UserData?,onBack:()->Unit) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                PlayerWins(10)
-                PlayerLosses(10)
+                userDataAPI?.winCount?.let { PlayerWins(it) }
+                userDataAPI?.lossCount?.let { PlayerLosses(it) }
                 Spacer(modifier = Modifier.height(8.dp)) // Adjust the spacing as needed
             }
         }
@@ -148,7 +175,7 @@ fun Profile(userData: UserData?,onBack:()->Unit) {
 
 
 @Composable
-fun PlayerWins(Wins: Int) {
+fun PlayerWins(Wins: Number) {
     Spacer(modifier = Modifier.height(40.dp))
     Row(
 
@@ -214,7 +241,7 @@ fun PlayerWins(Wins: Int) {
 
 
 @Composable
-fun PlayerLosses(Loss: Int) {
+fun PlayerLosses(Loss: Number) {
     Spacer(modifier = Modifier.height(40.dp))
     Row(
 
@@ -235,7 +262,7 @@ fun PlayerLosses(Loss: Int) {
 
 
         Image(
-            painter = painterResource(id = R.drawable.unlike),
+            painter = painterResource(id = R.drawable.circlered),
             contentDescription = "Thumbs Down - Losses",
             modifier = Modifier.height(60.dp)
         )
@@ -275,6 +302,19 @@ fun PlayerLosses(Loss: Int) {
         }
 
 
+    }
+}
+
+private fun fetchData(id: String, onComplete: (Result<UserResponseModel>) -> Unit) {
+    GlobalScope.launch(Dispatchers.IO) {
+        try {
+            val response = RetrofitInstance.apiService.fetchData(id)
+            onComplete(Result.success(response))
+        // Handle the response as needed
+        } catch (e: Exception) {
+            // Handle the error
+            onComplete(Result.failure(e))
+        }
     }
 }
 
