@@ -35,13 +35,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.tic_tac_toechallenge.R
+import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 //import com.google.mlkit.vision.text.Text
 
 @Composable
-fun Profile(onBack:()->Unit) {
+fun Profile(userData: UserData?,onBack:()->Unit) {
 
     Box(
         modifier = Modifier
@@ -64,7 +66,7 @@ fun Profile(onBack:()->Unit) {
                 .width(47.dp)
                 .height(47.dp)
                 .padding(8.dp)
-                .clickable {onBack() },
+                .clickable { onBack() },
 
             contentDescription = "Back Button Image",
             contentScale = ContentScale.Crop,
@@ -122,14 +124,14 @@ fun Profile(onBack:()->Unit) {
                         .padding(bottom = 8.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = null,
+
+                    AsyncImage(
+                        model = userData?.profilePictureUrl,
+                        contentDescription = "Profile Picture",
                         modifier = Modifier
-                            .size(170.dp)
-                            .clip(CircleShape)
-                            .border(5.dp, Color(0xFFEEEEEE), CircleShape),
-                    )
+                            .size(150.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

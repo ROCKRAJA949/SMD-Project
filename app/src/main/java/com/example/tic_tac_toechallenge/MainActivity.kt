@@ -156,7 +156,8 @@ class MainActivity : ComponentActivity() {
                                 onBack = {
 
                                         navController.popBackStack();
-                                }
+                                },
+                                userData = googleAuthUiClient.getSignedInUser()
 
                             )
                         }
