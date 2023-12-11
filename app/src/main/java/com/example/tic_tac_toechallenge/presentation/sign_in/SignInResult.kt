@@ -12,5 +12,6 @@ data class UserData(
     val email: String?,
     val profilePictureUrl: String?,
     val winCount: Number?,
+    val lossCount: Number?,
     val friends: List<UserData>?,
 )
