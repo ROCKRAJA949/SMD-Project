@@ -48,7 +48,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(30.dp))
-            //Find a Match
+            //Create a match
             Button(
                 onClick =  onGameClick,
                 modifier = Modifier
@@ -62,7 +62,24 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
-                Text(text = "Find a match", color = Color(0xFF053B50))
+                Text(text = "Join a match", color = Color(0xFF053B50))
+            }
+            //Join a Match
+            Spacer(modifier = Modifier.height(18.dp))
+            Button(
+                onClick = {  },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.findmatch),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+                Text(text = "Join a match", color = Color(0xFF053B50))
             }
             //Profile
             Spacer(modifier = Modifier.height(18.dp))
@@ -123,6 +140,6 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
 @Composable
 fun MainScreenPreview() {
     TicTacToeChallengeTheme {
-//        MainScreen()
+   //    MainScreen()
     }
 }
