@@ -20,7 +20,7 @@ import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 @Composable
-fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> Unit, onFriendsClick:() -> Unit, onGameClick: () -> Unit) {
+fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> Unit, onFriendsClick:() -> Unit, onGameClick: () -> Unit, onJoinGameClick: () -> Unit) {
     Log.d("userData", userData.toString())
     Box(
         modifier = Modifier
@@ -48,7 +48,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(30.dp))
-            //Find a Match
+            //Create Game
             Button(
                 onClick =  onGameClick,
                 modifier = Modifier
@@ -62,7 +62,24 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
-                Text(text = "Find a match", color = Color(0xFF053B50))
+                Text(text = "Create Game", color = Color(0xFF053B50))
+            }
+            //Join Game
+            Spacer(modifier = Modifier.height(18.dp))
+            Button(
+                onClick =  onJoinGameClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.findmatch),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+                Text(text = "Join Game", color = Color(0xFF053B50))
             }
             //Profile
             Spacer(modifier = Modifier.height(18.dp))

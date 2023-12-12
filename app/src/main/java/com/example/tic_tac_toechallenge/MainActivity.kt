@@ -13,13 +13,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.tic_tac_toechallenge.presentation.GameScreen
 import com.example.tic_tac_toechallenge.presentation.LoginScreen
 import com.example.tic_tac_toechallenge.presentation.MainScreen
@@ -32,7 +36,6 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.launch
-
 
 
 class MainActivity : ComponentActivity() {
@@ -103,7 +106,7 @@ class MainActivity : ComponentActivity() {
                                         Toast.LENGTH_LONG
                                     ).show()
 
-                                    navController.navigate("mainMenu");
+                                    navController.navigate("mainMenu")
                                     viewModel.resetState()
                                 }
 
@@ -126,28 +129,32 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("mainMenu") {
+                            val gameId = "empty"
                             MainScreen(
                                 userData = googleAuthUiClient.getSignedInUser(),
                                 onSignOut = {
                                     lifecycleScope.launch {
-                                        googleAuthUiClient.signOut();
+                                        googleAuthUiClient.signOut()
                                         Toast.makeText(
                                             applicationContext,
                                             "Signed Out",
                                             Toast.LENGTH_LONG
-                                        ).show();
+                                        ).show()
 
-                                        navController.popBackStack();
+                                        navController.popBackStack()
                                     }
                                 },
                                 onProfileClick = {
-                                    navController.navigate("profile");
+                                    navController.navigate("profile")
                                 },
                                 onFriendsClick = {
-                                    navController.navigate("friends");
+                                    navController.navigate("friends")
                                 },
                                 onGameClick = {
-                                    navController.navigate("game")
+                                    navController.navigate("game/${gameId}")
+                                },
+                                onJoinGameClick = {
+                                    //navController.navigate("joinGameMiddle")
                                 }
                             )
                         }
@@ -155,7 +162,7 @@ class MainActivity : ComponentActivity() {
                             Profile(
                                 onBack = {
 
-                                        navController.popBackStack();
+                                        navController.popBackStack()
                                 },
                                 userData = googleAuthUiClient.getSignedInUser()
 
@@ -164,13 +171,29 @@ class MainActivity : ComponentActivity() {
                         composable("friends") {
                             Friends(
                                 onBack = {
-                                    navController.popBackStack();
+                                    navController.popBackStack()
                                 }
                             )
                         }
-                        composable("game") {
-                            GameScreen()
+                        composable("game/{gameId}", arguments = listOf(
+                            navArgument("gameId"){
+                                type = NavType.StringType
+                            }
+                        )) {
+                                val gameId = it.arguments?.getString("gameId")
+                            GameScreen(
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                gameId = gameId
+                            )
                         }
+                        composable("joinGameMiddle") {
+//                            JoinScreen(
+//                                onJoinClick = {
+//                                    navController.navigate("game/${it}"))
+//                                }
+//                            )
+                        }
+
                     }
 
                 }
