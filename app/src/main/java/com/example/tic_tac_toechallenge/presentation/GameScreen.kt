@@ -1,5 +1,6 @@
 package com.example.tic_tac_toechallenge.presentation
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,13 +13,56 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.tic_tac_toechallenge.R
-import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
+import com.example.tic_tac_toechallenge.presentation.authentication.GameRequestModel
+import com.example.tic_tac_toechallenge.presentation.authentication.GameResponseModel
+import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
+import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
+import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.Random
 
 @Composable
-fun GameScreen() {
+fun GameScreen( userData: UserData?, gameId: String?) {
+    var id = remember {
+        mutableStateOf("")
+    }
+    var gameData by remember { mutableStateOf<GameResponseModel?>(null) }
+    LaunchedEffect(gameId){
+        Log.d("Game Start","in Launched Effect")
+        if(gameId == "empty"){
+            val r = Random(System.currentTimeMillis())
+            id.value =  ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000)).toString()
+            if(userData?.userId != null){
+                val gameRequestModel =  GameRequestModel (id.value, userData.userId)
+
+                val call: Call<GameResponseModel> = RetrofitInstance.apiService.createGame(gameRequestModel)
+
+                call!!.enqueue(object : Callback<GameResponseModel?> {
+                    override fun onResponse(call: Call<GameResponseModel?>?, response: Response<GameResponseModel?>) {
+//                        Log.d("API Response ", response.body().toString())
+                        gameData = response.body()
+                        Log.d("Game Data from API", gameData.toString())
+
+                    }
+
+                    override fun onFailure(call: Call<GameResponseModel?>?, t: Throwable) {
+                        // we get error response from API.
+                        if(t.message != null) {
+                            Log.d("Error found is : ", t.message!!)
+                        }
+                    }
+                })
+
+            }
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -38,6 +82,14 @@ fun GameScreen() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally // Center horizontally
         ) {
+            Text(
+                text = id.value, // Replace with actual user name
+                //style = MaterialTheme.typography.h6,//
+                fontWeight = FontWeight.Bold,
+                fontSize = 40.sp,
+                color = Color(0xFFEEEEEE),
+                textAlign = TextAlign.Center
+            )
             TicTacToeBoard()
         }
     }
@@ -117,10 +169,10 @@ fun TicTacToeButton() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GameScreenPreview() {
-    TicTacToeChallengeTheme {
-        GameScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GameScreenPreview() {
+//    TicTacToeChallengeTheme {
+//        GameScreen()
+//    }
+//}
