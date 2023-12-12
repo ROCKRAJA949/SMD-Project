@@ -48,6 +48,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(30.dp))
+
             //Create Game
             Button(
                 onClick =  onGameClick,
@@ -62,6 +63,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+
                 Text(text = "Create Game", color = Color(0xFF053B50))
             }
             //Join Game
@@ -79,6 +81,7 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+
                 Text(text = "Join Game", color = Color(0xFF053B50))
             }
             //Profile
@@ -140,6 +143,6 @@ fun MainScreen(userData: UserData?, onSignOut:() -> Unit, onProfileClick:() -> U
 @Composable
 fun MainScreenPreview() {
     TicTacToeChallengeTheme {
-//        MainScreen()
+   //    MainScreen()
     }
 }
