@@ -4,6 +4,7 @@ import com.example.tic_tac_toechallenge.presentation.authentication.GameRequestM
 import com.example.tic_tac_toechallenge.presentation.authentication.GameResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
+import com.example.tic_tac_toechallenge.presentation.authentication.UpdateGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
 import retrofit2.Call
 import retrofit2.Response
@@ -29,4 +30,8 @@ interface ApiService {
     //join game
     @PUT("game/join")
     fun joinGame(@Body joinGameRequestModel: JoinGameRequestModel): Call<MessageResponseModel>
+
+    //update board state
+    @PUT("game/update")
+    fun updateGame(@Body updateGameResponseModel: UpdateGameRequestModel):Call<MessageResponseModel>
 }
