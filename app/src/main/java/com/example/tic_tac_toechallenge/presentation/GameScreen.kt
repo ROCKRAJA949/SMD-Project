@@ -32,12 +32,15 @@ import com.example.tic_tac_toechallenge.presentation.authentication.GameResponse
 import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UpdateGameRequestModel
+import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
 import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
 import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
@@ -201,8 +204,64 @@ fun GameScreen( userData: UserData?, gameId: String) {
                 textAlign = TextAlign.Center
             )
             gameData?.let { TicTacToeBoard(it, userData, id.value) }
+
+
+            gameData?.turn?.let{ UserTurn(it) }
         }
     }
+}
+
+private fun fetchData(id: String, onComplete: (Result<UserResponseModel>) -> Unit) {
+    GlobalScope.launch(Dispatchers.IO) {
+        try {
+            val response = RetrofitInstance.apiService.fetchData(id)
+            onComplete(Result.success(response))
+            // Handle the response as needed
+        } catch (e: Exception) {
+            // Handle the error
+            onComplete(Result.failure(e))
+        }
+    }
+}
+
+@Composable
+fun UserTurn(userid : String){
+    var userName by remember { mutableStateOf<String?>("") }
+    fetchData(userid){result ->
+        result.onSuccess {
+            userName = it.username
+            Log.d("received User Name for turn",userName.toString())
+        }
+        result.onFailure { error ->
+            Log.d("turn user name failure", error.toString())
+        }
+
+    }
+
+    Row(
+
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .background(Color(0xFF176B87)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+
+        ) {
+
+
+
+        Spacer(modifier = Modifier.width(20.dp))
+
+        Text(
+            text = userName.toString() + "'s Turn!",
+            fontWeight = FontWeight.Bold,
+            fontSize = 40.sp,
+            color = Color(0xFFEEEEEE),
+            textAlign = TextAlign.Center
+        )
+    }
+
 }
 
 @Composable
