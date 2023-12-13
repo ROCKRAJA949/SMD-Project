@@ -42,6 +42,34 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.Random
 
+fun winCondition(board: List<String>): String{
+    // Check rows
+    for (i in 0 until 3) {
+        val rowStart = i * 3
+        if (board[rowStart] == board[rowStart + 1] && board[rowStart + 1] == board[rowStart + 2]) {
+            return board[rowStart]
+        }
+    }
+
+    // Check columns
+    for (i in 0 until 3) {
+        if (board[i] == board[i + 3] && board[i + 3] == board[i + 6]) {
+            return board[i]
+        }
+    }
+
+    // Check diagonals
+    if (board[0] == board[4] && board[4] == board[8]) {
+        return board[0]
+    }
+    if (board[2] == board[4] && board[4] == board[6]) {
+        return board[2]
+    }
+
+    // No winner
+    return "0";
+}
+
 @Composable
 fun GameScreen( userData: UserData?, gameId: String) {
     val gamesDb = Firebase.firestore.collection("games")
@@ -60,7 +88,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
                 val call: Call<GameResponseModel> = RetrofitInstance.apiService.createGame(gameRequestModel)
 
                 call!!.enqueue(object : Callback<GameResponseModel?> {
-                    override fun onResponse(call: Call<GameResponseModel?>?, response: Response<GameResponseModel?>) {
+                    override fun onResponsez(call: Call<GameResponseModel?>?, response: Response<GameResponseModel?>) {
 //
                         val gameRef = gamesDb.document(id.value).addSnapshotListener { snapshot, e ->
                             if (e != null) {
@@ -70,6 +98,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
                             if (snapshot != null && snapshot.exists()) {
                                 gameData = snapshot.toObject(GameResponseModel::class.java)
                                 Log.d(ContentValues.TAG, "Current data: ${gameData?.boardState}")
+                                gameData?.boardState?.let{winCondition(it)}
                             } else {
                                 Log.d(ContentValues.TAG, "Current Data: null")
                                 null
