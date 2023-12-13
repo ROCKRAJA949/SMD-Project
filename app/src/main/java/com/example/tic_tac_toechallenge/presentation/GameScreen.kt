@@ -31,7 +31,9 @@ import com.example.tic_tac_toechallenge.presentation.authentication.GameRequestM
 import com.example.tic_tac_toechallenge.presentation.authentication.GameResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
+import com.example.tic_tac_toechallenge.presentation.authentication.UpdateGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
+import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -88,7 +90,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
                 val call: Call<GameResponseModel> = RetrofitInstance.apiService.createGame(gameRequestModel)
 
                 call!!.enqueue(object : Callback<GameResponseModel?> {
-                    override fun onResponsez(call: Call<GameResponseModel?>?, response: Response<GameResponseModel?>) {
+                    override fun onResponse(call: Call<GameResponseModel?>?, response: Response<GameResponseModel?>) {
 //
                         val gameRef = gamesDb.document(id.value).addSnapshotListener { snapshot, e ->
                             if (e != null) {
@@ -198,13 +200,13 @@ fun GameScreen( userData: UserData?, gameId: String) {
                 color = Color(0xFFEEEEEE),
                 textAlign = TextAlign.Center
             )
-            gameData?.boardState?.let { TicTacToeBoard(it) }
+            gameData?.let { TicTacToeBoard(it, userData, id.value) }
         }
     }
 }
 
 @Composable
-fun TicTacToeBoard(boardState: List<String>) {
+fun TicTacToeBoard(gameData: GameResponseModel, userData: UserData?, gameId: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -213,11 +215,272 @@ fun TicTacToeBoard(boardState: List<String>) {
         horizontalAlignment = Alignment.CenterHorizontally // Center horizontally
     ) {
 
-        TicTacToeRow(boardState.get(0), boardState.get(1), boardState.get(2), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
-        TicTacToeRow(boardState.get(3), boardState.get(4), boardState.get(5), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
-        TicTacToeRow(boardState.get(6), boardState.get(7), boardState.get(8), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
+        TicTacToeRow(gameData.boardState.get(0), gameData.boardState.get(1), gameData.boardState.get(2), onClickLeft = {onClickTopLeft(gameData, userData, gameId)}, onClickMiddle = {}, onClickRight = {})
+        TicTacToeRow(gameData.boardState.get(3), gameData.boardState.get(4), gameData.boardState.get(5), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
+        TicTacToeRow(gameData.boardState.get(6), gameData.boardState.get(7), gameData.boardState.get(8), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
 
     }
+}
+
+fun onClickTopLeft(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[0] = "x"
+        }
+        else {
+            updatedBoardState[0] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickTop(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[1] = "x"
+        }
+        else {
+            updatedBoardState[1] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickTopRight(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[2] = "x"
+        }
+        else {
+            updatedBoardState[2] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickMiddleLeft(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[3] = "x"
+        }
+        else {
+            updatedBoardState[3] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickMiddle(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[4] = "x"
+        }
+        else {
+            updatedBoardState[4] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickMiddleRight(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[5] = "x"
+        }
+        else {
+            updatedBoardState[5] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickBottomLeft(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[6] = "x"
+        }
+        else {
+            updatedBoardState[6] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickBottom(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[7] = "x"
+        }
+        else {
+            updatedBoardState[7] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
+}
+
+fun onClickBottomRight(gameData: GameResponseModel, userData: UserData?, gameId: String) {
+    val updatedBoardState: MutableList<String> = gameData.boardState.toMutableList()
+    if(gameData.turn == userData?.userId) {
+        if(gameData.turn == gameData.player1Id) {
+            updatedBoardState[8] = "x"
+        }
+        else {
+            updatedBoardState[8] = "o"
+        }
+
+        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+                Log.d("Game update message", response.message())
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+
 }
 
 @Composable
@@ -240,7 +503,7 @@ fun TicTacToeRow(left: String, middle:String, right: String, onClickLeft: () -> 
 @Composable
 fun TicTacToeButton(value: String, onClick:()->Unit) {
     Button(
-        onClick = { /* Handle button click */ },
+        onClick = onClick,
         modifier = Modifier
             .size(80.dp) // Increase the button size
             .clip(RoundedCornerShape(4.dp)), // Add rounded corners
@@ -269,6 +532,8 @@ fun TicTacToeButton(value: String, onClick:()->Unit) {
 
 
 
+
+
     }
 }
 
@@ -292,4 +557,6 @@ suspend fun getGameData(id: String): GameResponseModel? {
         }
     }
 }
+
+
 
