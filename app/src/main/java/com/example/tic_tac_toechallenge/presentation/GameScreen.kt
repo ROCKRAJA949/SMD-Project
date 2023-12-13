@@ -102,7 +102,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
                             }
                             if (snapshot != null && snapshot.exists()) {
                                 gameData = snapshot.toObject(GameResponseModel::class.java)
-                                Log.d(ContentValues.TAG, "Current data: ${gameData?.boardState}")
+                                Log.d(ContentValues.TAG, "Current data: ${gameData?.turn}")
                                 gameData?.boardState?.let{winCondition(it)}
                             } else {
                                 Log.d(ContentValues.TAG, "Current Data: null")
@@ -256,7 +256,7 @@ fun UserTurn(userid : String){
         Text(
             text = userName.toString() + "'s Turn!",
             fontWeight = FontWeight.Bold,
-            fontSize = 40.sp,
+            fontSize = 30.sp,
             color = Color(0xFFEEEEEE),
             textAlign = TextAlign.Center
         )
@@ -274,9 +274,9 @@ fun TicTacToeBoard(gameData: GameResponseModel, userData: UserData?, gameId: Str
         horizontalAlignment = Alignment.CenterHorizontally // Center horizontally
     ) {
 
-        TicTacToeRow(gameData.boardState.get(0), gameData.boardState.get(1), gameData.boardState.get(2), onClickLeft = {onClickTopLeft(gameData, userData, gameId)}, onClickMiddle = {}, onClickRight = {})
-        TicTacToeRow(gameData.boardState.get(3), gameData.boardState.get(4), gameData.boardState.get(5), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
-        TicTacToeRow(gameData.boardState.get(6), gameData.boardState.get(7), gameData.boardState.get(8), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
+        TicTacToeRow(gameData.boardState.get(0), gameData.boardState.get(1), gameData.boardState.get(2), onClickLeft = { onClickTopLeft(gameData, userData, gameId) }, onClickMiddle = { onClickTop(gameData, userData, gameId) }, onClickRight = { onClickTopRight(gameData, userData, gameId) })
+        TicTacToeRow(gameData.boardState.get(3), gameData.boardState.get(4), gameData.boardState.get(5), onClickLeft = { onClickMiddleLeft(gameData, userData, gameId) }, onClickMiddle = { onClickMiddle(gameData, userData, gameId) }, onClickRight = { onClickMiddleRight(gameData, userData, gameId) })
+        TicTacToeRow(gameData.boardState.get(6), gameData.boardState.get(7), gameData.boardState.get(8), onClickLeft = { onClickBottomLeft(gameData, userData, gameId) }, onClickMiddle = { onClickBottom(gameData, userData, gameId) }, onClickRight = { onClickBottomRight(gameData, userData, gameId) })
 
     }
 }
