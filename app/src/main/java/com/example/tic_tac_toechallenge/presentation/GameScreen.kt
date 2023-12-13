@@ -5,10 +5,18 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.RowScope.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -23,20 +31,11 @@ import com.example.tic_tac_toechallenge.presentation.authentication.GameRequestM
 import com.example.tic_tac_toechallenge.presentation.authentication.GameResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
-import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
 import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
-import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
@@ -170,13 +169,13 @@ fun GameScreen( userData: UserData?, gameId: String) {
                 color = Color(0xFFEEEEEE),
                 textAlign = TextAlign.Center
             )
-            TicTacToeBoard()
+            gameData?.boardState?.let { TicTacToeBoard(it) }
         }
     }
 }
 
 @Composable
-fun TicTacToeBoard() {
+fun TicTacToeBoard(boardState: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -184,14 +183,16 @@ fun TicTacToeBoard() {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally // Center horizontally
     ) {
-        for (i in 0 until 3) {
-            TicTacToeRow()
-        }
+
+        TicTacToeRow(boardState.get(0), boardState.get(1), boardState.get(2), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
+        TicTacToeRow(boardState.get(3), boardState.get(4), boardState.get(5), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
+        TicTacToeRow(boardState.get(6), boardState.get(7), boardState.get(8), onClickLeft = {}, onClickMiddle = {}, onClickRight = {})
+
     }
 }
 
 @Composable
-fun TicTacToeRow() {
+fun TicTacToeRow(left: String, middle:String, right: String, onClickLeft: () -> Unit,onClickMiddle: () -> Unit, onClickRight: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,53 +200,46 @@ fun TicTacToeRow() {
         horizontalArrangement = Arrangement.Center, // Center horizontally
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TicTacToeButton()
+        TicTacToeButton(left, onClickLeft)
         Spacer(modifier = Modifier.width(8.dp)) // Add spacing between buttons
-        TicTacToeButton()
+        TicTacToeButton(middle, onClickMiddle)
         Spacer(modifier = Modifier.width(8.dp)) // Add spacing between buttons
-        TicTacToeButton()
+        TicTacToeButton(right, onClickRight)
     }
 }
 
 @Composable
-fun TicTacToeButton() {
+fun TicTacToeButton(value: String, onClick:()->Unit) {
     Button(
         onClick = { /* Handle button click */ },
         modifier = Modifier
             .size(80.dp) // Increase the button size
             .clip(RoundedCornerShape(4.dp)), // Add rounded corners
-        colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+        colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE)),
+
     ) {
-        // You can customize the content of the button here
-        // For example, you can use icons like Icons.Default.Clear and Icons.Default.Close for X and O
-        /*
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = null,
-            modifier = Modifier.size(40.dp),
-            tint = Color.Red
 
-            //Icons for x and o
-            /*
-                For 'O':
+            Log.d("button value", value)
+
+
+            if(value == "x") {
                 Icon(
-                imageVector = Icons.Default.Clear,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = Color(0xFF053B50)
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp),
+                    tint = Color(0xFF053B50)
                 )
-
-                For 'X':
-                Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = Color(0xFF053B50)
+            }
+            if(value == "o") {
+                Image(
+                    painterResource(id = R.drawable.circle),
+                    modifier = Modifier.size(25.dp),
+                    contentDescription = null,
                 )
-            */
+            }
 
-        )
-        */
+
+
     }
 }
 
