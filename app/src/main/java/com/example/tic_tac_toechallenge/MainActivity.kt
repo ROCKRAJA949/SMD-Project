@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.tic_tac_toechallenge.presentation.GameScreen
+import com.example.tic_tac_toechallenge.presentation.JoinScreen
 import com.example.tic_tac_toechallenge.presentation.LoginScreen
 import com.example.tic_tac_toechallenge.presentation.MainScreen
 import com.example.tic_tac_toechallenge.presentation.Profile
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-//testing things ples ignore
+//testing things ples ignore(nvm it is important)
     private val authViewModel: AuthViewModel by viewModels()
     private val signInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -154,7 +155,7 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("game/${gameId}")
                                 },
                                 onJoinGameClick = {
-                                    //navController.navigate("joinGameMiddle")
+                                    navController.navigate("joinGameMiddle")
                                 }
                             )
                         }
@@ -181,17 +182,22 @@ class MainActivity : ComponentActivity() {
                             }
                         )) {
                                 val gameId = it.arguments?.getString("gameId")
-                            GameScreen(
-                                userData = googleAuthUiClient.getSignedInUser(),
-                                gameId = gameId
-                            )
+                            if (gameId != null) {
+                                GameScreen(
+                                    userData = googleAuthUiClient.getSignedInUser(),
+                                    gameId = gameId
+                                )
+                            }
                         }
                         composable("joinGameMiddle") {
-//                            JoinScreen(
-//                                onJoinClick = {
-//                                    navController.navigate("game/${it}"))
-//                                }
-//                            )
+                            JoinScreen(
+                                onJoinClick = {id:String ->
+                                    navController.navigate("game/${id}")
+                                },
+                                onBackClick = {
+                                    navController.popBackStack()
+                                }
+                            )
                         }
 
                     }
@@ -201,13 +207,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    TicTacToeChallengeTheme {
-//        LoginScreen()
-//    }
-//}

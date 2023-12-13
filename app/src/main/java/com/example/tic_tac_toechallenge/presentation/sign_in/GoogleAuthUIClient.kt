@@ -7,6 +7,7 @@ import android.content.IntentSender
 import android.util.Log
 import android.widget.Toast
 import com.example.tic_tac_toechallenge.R
+import com.example.tic_tac_toechallenge.presentation.authentication.GameResponseModel
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -14,20 +15,21 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
+import java.lang.StringBuilder
 import java.util.concurrent.CancellationException
 
 class GoogleAuthUIClient (
     private val context: Context,
     private val oneTapClient: SignInClient,
-
     ){
     private val auth = Firebase.auth
     private val db = Firebase.firestore
     private val usersDb = FirebaseFirestore.getInstance().collection("users")
-
+    private val gamesDb = FirebaseFirestore.getInstance().collection("games")
     suspend fun signIn():IntentSender? {
         val result = try {
             oneTapClient.beginSignIn(
@@ -41,6 +43,10 @@ class GoogleAuthUIClient (
         return result?.pendingIntent?.intentSender
 
     }
+
+
+
+
 
     suspend fun signInWithIntent(intent: Intent): SignInResult {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)

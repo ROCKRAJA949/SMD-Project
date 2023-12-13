@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,22 +30,9 @@ import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnterCode() {
-    var text by remember { mutableStateOf(value  = "00000") }
-
-    TextField(
-        value = text,
-        onValueChange = { text = it },
-        label = { Text(text = "Enter Game Code!", color = Color(0xFF053B50)) },
-        modifier = Modifier.fillMaxWidth()
-            .background(Color(0xFFEEEEEE)),
-        colors = TextFieldDefaults.textFieldColors(textColor = Color(0xFF053B50))
-    )
-}
-
-@Composable
-fun JoinScreen() {
+fun JoinScreen(onJoinClick:(id:String)->Unit, onBackClick:() -> Unit) {
     //Log.d("userData", userData.toString())
+    var gameId by remember { mutableStateOf(value  = "00000") }
     Box{
         Image(
             painter = painterResource(id = R.drawable.xando),
@@ -61,7 +49,7 @@ fun JoinScreen() {
                     .width(47.dp)
                     .height(47.dp)
                     .padding(8.dp)
-                    .clickable {},
+                    .clickable {onBackClick()},
 
                 contentDescription = "Back Button Image",
                 contentScale = ContentScale.Crop
@@ -104,12 +92,19 @@ fun JoinScreen() {
                     Spacer(modifier = Modifier.height(80.dp))
 
                     //add a text box here
-                    EnterCode()
-
+//                    EnterCode(gameId)
+                    TextField(
+                        value = gameId,
+                        onValueChange = { gameId = it },
+                        label = { Text(text = "Enter Game Code!", color = Color(0xFF053B50)) },
+                        modifier = Modifier.fillMaxWidth()
+                            .background(Color(0xFFEEEEEE)),
+                        colors = TextFieldDefaults.textFieldColors(textColor = Color(0xFF053B50))
+                    )
                     Spacer(modifier = Modifier.height(18.dp))
                     //Find a Match
                     Button(
-                        onClick =  {},
+                        onClick =  {onJoinClick(gameId)},
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
@@ -134,11 +129,11 @@ fun JoinScreen() {
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun JoinMatchPreview() {
-    TicTacToeChallengeTheme {
-        //JoinScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun JoinMatchPreview() {
+//    TicTacToeChallengeTheme {
+//        //JoinScreen()
+//    }
+//}
 

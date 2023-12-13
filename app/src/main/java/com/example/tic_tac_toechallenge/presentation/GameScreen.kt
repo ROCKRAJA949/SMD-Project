@@ -1,5 +1,6 @@
 package com.example.tic_tac_toechallenge.presentation
 
+import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,16 +21,31 @@ import androidx.compose.ui.unit.sp
 import com.example.tic_tac_toechallenge.R
 import com.example.tic_tac_toechallenge.presentation.authentication.GameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.GameResponseModel
+import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequestModel
+import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
 import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
+import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.toObject
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Random
 
 @Composable
-fun GameScreen( userData: UserData?, gameId: String?) {
+fun GameScreen( userData: UserData?, gameId: String) {
+    val gamesDb = Firebase.firestore.collection("games")
     var id = remember {
         mutableStateOf("")
     }
@@ -46,10 +62,20 @@ fun GameScreen( userData: UserData?, gameId: String?) {
 
                 call!!.enqueue(object : Callback<GameResponseModel?> {
                     override fun onResponse(call: Call<GameResponseModel?>?, response: Response<GameResponseModel?>) {
-//                        Log.d("API Response ", response.body().toString())
-                        gameData = response.body()
-                        Log.d("Game Data from API", gameData.toString())
-
+//
+                        val gameRef = gamesDb.document(id.value).addSnapshotListener { snapshot, e ->
+                            if (e != null) {
+                                Log.w(ContentValues.TAG, "Listen failed.", e)
+                                return@addSnapshotListener
+                            }
+                            if (snapshot != null && snapshot.exists()) {
+                                gameData = snapshot.toObject(GameResponseModel::class.java)
+                                Log.d(ContentValues.TAG, "Current data: ${gameData?.boardState}")
+                            } else {
+                                Log.d(ContentValues.TAG, "Current Data: null")
+                                null
+                            }
+                        }
                     }
 
                     override fun onFailure(call: Call<GameResponseModel?>?, t: Throwable) {
@@ -60,6 +86,60 @@ fun GameScreen( userData: UserData?, gameId: String?) {
                     }
                 })
 
+            }
+        }
+        else {
+            id.value = gameId
+            Log.d("gameId from join screen", id.value)
+
+            gameData = getGameData(id.value)
+
+
+            if((gameData?.player1Id.toString() == userData?.userId) || (gameData?.player2Id.toString() == userData?.userId)){
+                Log.d("Join Error", userData.userId+" is already in session")
+            }
+            else {
+                if(userData?.userId != null) {
+                    val joinGameRequestModel = JoinGameRequestModel(id.value, userData.userId)
+                    var message:MessageResponseModel = MessageResponseModel(message = "")
+                    val call: Call<MessageResponseModel> =
+                        RetrofitInstance.apiService.joinGame(joinGameRequestModel)
+
+                    call!!.enqueue(object : Callback<MessageResponseModel?> {
+                        override fun onResponse(
+                            call: Call<MessageResponseModel?>?,
+                            response: Response<MessageResponseModel?>
+                        ) {
+                        Log.d("API Response ", response.toString())
+                            if(response.body() != null){
+                                message = response.body()!!
+                            }
+
+                            Log.d("message from API", message.message)
+                            val gameRef = gamesDb.document(id.value).addSnapshotListener { snapshot, e ->
+                                if (e != null) {
+                                    Log.w(ContentValues.TAG, "Listen failed.", e)
+                                    return@addSnapshotListener
+                                }
+                                if (snapshot != null && snapshot.exists()) {
+                                    gameData = snapshot.toObject(GameResponseModel::class.java)
+                                    Log.d(ContentValues.TAG, "Current data: ${gameData?.boardState}")
+                                } else {
+                                    Log.d(ContentValues.TAG, "Current Data: null")
+                                    null
+                                }
+                            }
+
+                        }
+
+                        override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                            // we get error response from API.
+                            if (t.message != null) {
+                                Log.d("Error found is : ", t.message!!)
+                            }
+                        }
+                    })
+                }
             }
         }
     }
@@ -169,10 +249,24 @@ fun TicTacToeButton() {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun GameScreenPreview() {
-//    TicTacToeChallengeTheme {
-//        GameScreen()
-//    }
-//}
+suspend fun getGameData(id: String): GameResponseModel? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val response = RetrofitInstance.apiService.fetchGameData(id)
+
+            if(response.isSuccessful) {
+                response.body()
+            }
+            else {
+                val arr: List<String> = emptyList()
+
+                GameResponseModel("","","","","", arr)
+            }
+        }catch (e: Exception) {
+            val arr: List<String> = emptyList()
+
+            GameResponseModel("","","","","", arr)
+        }
+    }
+}
+
