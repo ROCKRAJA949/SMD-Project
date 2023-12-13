@@ -33,6 +33,7 @@ import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequ
 import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UpdateGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
+import com.example.tic_tac_toechallenge.presentation.authentication.WinnerRequestModel
 import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
 import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
@@ -51,23 +52,25 @@ fun winCondition(board: List<String>): String{
     // Check rows
     for (i in 0 until 3) {
         val rowStart = i * 3
-        if (board[rowStart] == board[rowStart + 1] && board[rowStart + 1] == board[rowStart + 2]) {
+        Log.d("checking row", rowStart.toString())
+        if (board[rowStart] == board[rowStart + 1] && board[rowStart + 1] == board[rowStart + 2] && (board[rowStart] == "x" || board[rowStart] == "o")) {
             return board[rowStart]
         }
     }
 
     // Check columns
     for (i in 0 until 3) {
-        if (board[i] == board[i + 3] && board[i + 3] == board[i + 6]) {
+        Log.d("checking column", i.toString())
+        if (board[i] == board[i + 3] && board[i + 3] == board[i + 6] &&  (board[i] == "x" || board[i] == "o")) {
             return board[i]
         }
     }
 
     // Check diagonals
-    if (board[0] == board[4] && board[4] == board[8]) {
+    if (board[0] == board[4] && board[4] == board[8] && (board[0] == "x" || board[0] == "o")) {
         return board[0]
     }
-    if (board[2] == board[4] && board[4] == board[6]) {
+    if (board[2] == board[4] && board[4] == board[6] && (board[2] == "x" || board[2] == "o")) {
         return board[2]
     }
 
@@ -206,7 +209,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
             gameData?.let { TicTacToeBoard(it, userData, id.value) }
 
 
-            gameData?.turn?.let{ UserTurn(it) }
+            gameData?.let{ UserTurn(it.turn, it) }
         }
     }
 }
@@ -224,15 +227,19 @@ private fun fetchData(id: String, onComplete: (Result<UserResponseModel>) -> Uni
     }
 }
 
+
+
+
 @Composable
-fun UserTurn(userid : String){
+fun UserTurn(userid : String, gameData: GameResponseModel){
     var userName by remember { mutableStateOf<String?>("") }
     fetchData(userid){result ->
         result.onSuccess {
             userName = it.username
-            Log.d("received User Name for turn",userName.toString())
+            Log.d("received User Name for turn",it.username.toString())
         }
         result.onFailure { error ->
+            ""
             Log.d("turn user name failure", error.toString())
         }
 
@@ -252,14 +259,37 @@ fun UserTurn(userid : String){
 
 
         Spacer(modifier = Modifier.width(20.dp))
+        if(gameData.winnerId == "") {
 
-        Text(
-            text = userName.toString() + "'s Turn!",
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp,
-            color = Color(0xFFEEEEEE),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text =  userName.toString() + "'s Turn!",
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                color = Color(0xFFEEEEEE),
+                textAlign = TextAlign.Center
+            )
+        }
+        else {
+            var winnerName  by remember { mutableStateOf<String?>("") }
+            fetchData(gameData.winnerId){result ->
+                result.onSuccess {
+                    winnerName =it.username
+                    Log.d("received User Name for turn",it.username.toString())
+                }
+                result.onFailure { error ->
+                    ""
+                    Log.d("turn user name failure", error.toString())
+                }
+
+            }
+            Text(
+                text =  winnerName.toString() + " Wins!",
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                color = Color(0xFFEEEEEE),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 
 }
@@ -291,21 +321,7 @@ fun onClickTopLeft(gameData: GameResponseModel, userData: UserData?, gameId: Str
             updatedBoardState[0] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -320,21 +336,7 @@ fun onClickTop(gameData: GameResponseModel, userData: UserData?, gameId: String)
             updatedBoardState[1] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -349,21 +351,7 @@ fun onClickTopRight(gameData: GameResponseModel, userData: UserData?, gameId: St
             updatedBoardState[2] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -378,21 +366,7 @@ fun onClickMiddleLeft(gameData: GameResponseModel, userData: UserData?, gameId: 
             updatedBoardState[3] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -407,21 +381,7 @@ fun onClickMiddle(gameData: GameResponseModel, userData: UserData?, gameId: Stri
             updatedBoardState[4] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -436,21 +396,7 @@ fun onClickMiddleRight(gameData: GameResponseModel, userData: UserData?, gameId:
             updatedBoardState[5] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -465,21 +411,7 @@ fun onClickBottomLeft(gameData: GameResponseModel, userData: UserData?, gameId: 
             updatedBoardState[6] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -494,21 +426,7 @@ fun onClickBottom(gameData: GameResponseModel, userData: UserData?, gameId: Stri
             updatedBoardState[7] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
-
-        call!!.enqueue(object : Callback<MessageResponseModel?> {
-            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
-
-                Log.d("Game update message", response.message())
-            }
-
-            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
-                if(t.message != null) {
-                    Log.d("Error found is : ", t.message!!)
-                }
-            }
-        })
+        updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
     }
 
 }
@@ -523,21 +441,82 @@ fun onClickBottomRight(gameData: GameResponseModel, userData: UserData?, gameId:
             updatedBoardState[8] = "o"
         }
 
-        val updateGameRequestModel = UpdateGameRequestModel(gameId, updatedBoardState, userData.userId)
-        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.updateGame(updateGameRequestModel)
+       updateGameBoardAndWinDeclaration(gameId, boardState = updatedBoardState, userData, gameData)
+    }
+
+}
+
+
+fun updateGameBoardAndWinDeclaration(gameId:String, boardState:List<String>, userData: UserData?, gameData: GameResponseModel) {
+    val updateGameRequestModel =
+        userData?.userId?.let { UpdateGameRequestModel(gameId, boardState, it) }
+    val call: Call<MessageResponseModel>? = updateGameRequestModel?.let {
+        RetrofitInstance.apiService.updateGame(
+            it
+        )
+    }
+
+    call!!.enqueue(object : Callback<MessageResponseModel?> {
+        override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+
+            Log.d("Game update message", response.message())
+        }
+
+        override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+            if(t.message != null) {
+                Log.d("Error found is : ", t.message!!)
+            }
+        }
+    })
+
+    val winner:String = winCondition(boardState)
+
+    if(winner == "x"){
+        val winnerId = gameData.player1Id
+        val winnerRequestModel = WinnerRequestModel(id = gameId, winnerId = winnerId)
+
+        val call: Call<MessageResponseModel> = RetrofitInstance.apiService.declareWinner(winnerRequestModel)
 
         call!!.enqueue(object : Callback<MessageResponseModel?> {
             override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+                Log.d("Message from api", response.message())
 
-                Log.d("Game update message", response.message())
             }
 
             override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                // we get error response from API.
                 if(t.message != null) {
                     Log.d("Error found is : ", t.message!!)
                 }
             }
         })
+    }
+    else if (winner == "o") {
+        val winnerId = gameData.player2Id
+        val winnerRequestModel = winnerId?.let { WinnerRequestModel(id = gameId, it) }
+
+        val call: Call<MessageResponseModel>? = winnerRequestModel?.let {
+            RetrofitInstance.apiService.declareWinner(
+                it
+            )
+        }
+
+        call!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+                Log.d("Message from api", response.message())
+
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                // we get error response from API.
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+    }
+    else {
+        //do nothing
     }
 
 }

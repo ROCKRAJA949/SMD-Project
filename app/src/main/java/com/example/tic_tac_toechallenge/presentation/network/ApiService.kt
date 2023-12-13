@@ -6,6 +6,7 @@ import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequ
 import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UpdateGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
+import com.example.tic_tac_toechallenge.presentation.authentication.WinnerRequestModel
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -34,4 +35,8 @@ interface ApiService {
     //update board state
     @PUT("game/update")
     fun updateGame(@Body updateGameResponseModel: UpdateGameRequestModel):Call<MessageResponseModel>
+
+    //updates game doc to declare winner
+    @PUT("game/winner")
+    fun declareWinner(@Body winnerRequestModel: WinnerRequestModel):Call<MessageResponseModel>
 }
