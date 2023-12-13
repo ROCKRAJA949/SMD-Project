@@ -1,26 +1,23 @@
 package com.example.tic_tac_toechallenge.presentation
 
 import android.content.ContentValues
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.RowScope.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +32,6 @@ import com.example.tic_tac_toechallenge.presentation.authentication.UpdateGameRe
 import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.WinnerRequestModel
 import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
-import com.example.tic_tac_toechallenge.presentation.sign_in.GoogleAuthUIClient
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -79,14 +75,30 @@ fun winCondition(board: List<String>): String{
 }
 
 @Composable
-fun GameScreen( userData: UserData?, gameId: String) {
+fun playerJoinToast(context: Context, player2Id: String) {
+    var joiner by remember { mutableStateOf<String?>("") }
+    fetchData(player2Id){result ->
+        result.onSuccess {
+            joiner = it.username + "has joined!"
+            Log.d("received User Name for toast",it.username.toString())
+        }
+        result.onFailure { error ->
+            ""
+            Log.d("toast failure", error.toString())
+        }
+
+    }
+    Toast.makeText(context, joiner, Toast.LENGTH_LONG).show()
+}
+
+@Composable
+fun GameScreen( userData: UserData?, gameId: String, onBackClick: ()-> Unit) {
     val gamesDb = Firebase.firestore.collection("games")
     var id = remember {
         mutableStateOf("")
     }
     var gameData by remember { mutableStateOf<GameResponseModel?>(null) }
     LaunchedEffect(gameId){
-        Log.d("Game Start","in Launched Effect")
         if(gameId == "empty"){
             val r = Random(System.currentTimeMillis())
             id.value =  ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000)).toString()
@@ -105,6 +117,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
                             }
                             if (snapshot != null && snapshot.exists()) {
                                 gameData = snapshot.toObject(GameResponseModel::class.java)
+
                                 Log.d(ContentValues.TAG, "Current data: ${gameData?.turn}")
                                 gameData?.boardState?.let{winCondition(it)}
                             } else {
@@ -146,7 +159,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
                             call: Call<MessageResponseModel?>?,
                             response: Response<MessageResponseModel?>
                         ) {
-                        Log.d("API Response ", response.toString())
+                            Log.d("API Response ", response.toString())
                             if(response.body() != null){
                                 message = response.body()!!
                             }
@@ -179,6 +192,10 @@ fun GameScreen( userData: UserData?, gameId: String) {
             }
         }
     }
+    if(gameData?.player2Id != ""){
+        playerJoinToast(LocalContext.current, gameData?.player2Id.toString())
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -209,7 +226,7 @@ fun GameScreen( userData: UserData?, gameId: String) {
             gameData?.let { TicTacToeBoard(it, userData, id.value) }
 
 
-            gameData?.let{ UserTurn(it.turn, it) }
+            gameData?.let{ UserTurn(it.turn, it, onBackClick) }
         }
     }
 }
@@ -230,8 +247,9 @@ private fun fetchData(id: String, onComplete: (Result<UserResponseModel>) -> Uni
 
 
 
+
 @Composable
-fun UserTurn(userid : String, gameData: GameResponseModel){
+fun UserTurn(userid: String, gameData: GameResponseModel, onBackClick: () -> Unit){
     var userName by remember { mutableStateOf<String?>("") }
     fetchData(userid){result ->
         result.onSuccess {
@@ -289,6 +307,24 @@ fun UserTurn(userid : String, gameData: GameResponseModel){
                 color = Color(0xFFEEEEEE),
                 textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Button(
+                onClick =  onBackClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.back),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+                Text(text = "Exit", color = Color(0xFF053B50))
+            }
         }
     }
 

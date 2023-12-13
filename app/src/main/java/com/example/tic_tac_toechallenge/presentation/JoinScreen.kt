@@ -1,6 +1,7 @@
 package com.example.tic_tac_toechallenge.presentation
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,11 +30,21 @@ import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
 
+@Composable
+fun checkCode(gameId: String, onJoinClick:(id:String)->Unit){
+    if(gameId.length == 5)
+        onJoinClick(gameId)
+    else
+    {
+        Toast.makeText(LocalContext.current, "Code must be of 5 integers!", Toast.LENGTH_LONG).show()
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JoinScreen(onJoinClick:(id:String)->Unit, onBackClick:() -> Unit) {
     //Log.d("userData", userData.toString())
-    var gameId by remember { mutableStateOf(value  = "00000") }
+    var gameId by remember { mutableStateOf(value  = "") }
     Box{
         Image(
             painter = painterResource(id = R.drawable.xando),
@@ -78,8 +90,6 @@ fun JoinScreen(onJoinClick:(id:String)->Unit, onBackClick:() -> Unit) {
 
                         ) {
 
-
-
                         Text(
                             text = "JOIN MATCH",
                             fontWeight = FontWeight.Bold,
@@ -104,7 +114,8 @@ fun JoinScreen(onJoinClick:(id:String)->Unit, onBackClick:() -> Unit) {
                     Spacer(modifier = Modifier.height(18.dp))
                     //Find a Match
                     Button(
-                        onClick =  {onJoinClick(gameId)},
+                        //onClick =  {onJoinClick(gameId)},
+                        onClick = {checkCode(gameId, onJoinClick)},
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
