@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://10.0.2.2:5001/tic-tac-toe-challenge-5fbe6/us-central1/app/"
+    private const val BASE_URL = "https://app-ipsygc6sjq-uc.a.run.app//"
 
 //    Gson gson = new GsonBuilder()
 //    .setLenient()
