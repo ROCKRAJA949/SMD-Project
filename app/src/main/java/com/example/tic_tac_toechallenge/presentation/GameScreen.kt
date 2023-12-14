@@ -43,8 +43,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Random
+import java.util.logging.LogManager
 
 fun winCondition(board: List<String>): String{
+
     // Check rows
     for (i in 0 until 3) {
         val rowStart = i * 3
@@ -74,6 +76,23 @@ fun winCondition(board: List<String>): String{
     return "0";
 }
 
+fun drawCheck(board: List<String>): String {
+    var drawCount = 0
+    for(i in 0 until 9){
+        if(board[i] == "")
+            break
+        else
+            drawCount++
+    }
+
+    if(drawCount == 9){
+        Log.d("draw check", "true")
+        return "d"
+    }
+
+    drawCount = 0
+    return ""
+}
 //@Composable
 //fun playerJoinToast(context: Context, player2Id: String) {
 //    var joiner by remember { mutableStateOf<String>("123") }
@@ -121,6 +140,7 @@ fun GameScreen( userData: UserData?, gameId: String, onBackClick: ()-> Unit) {
 
                                 Log.d(ContentValues.TAG, "Current data: ${gameData?.turn}")
                                 gameData?.boardState?.let{winCondition(it)}
+                                gameData?.boardState?.let { drawCheck(it) }
                             } else {
                                 Log.d(ContentValues.TAG, "Current Data: null")
                                 null
@@ -283,14 +303,46 @@ fun UserTurn(userid: String, gameData: GameResponseModel, onBackClick: () -> Uni
 
         Spacer(modifier = Modifier.width(20.dp))
         if(gameData.winnerId == "") {
+            if(gameData?.boardState?.let{drawCheck(it)} == "d") {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Draw!",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        color = Color(0xFFEEEEEE),
+                        textAlign = TextAlign.Center
+                    )
 
-            Text(
-                text =  userName.toString() + "'s Turn!",
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
-                color = Color(0xFFEEEEEE),
-                textAlign = TextAlign.Center
-            )
+                    Spacer(modifier = Modifier.width(30.dp))
+
+                    Button(
+                        onClick = onBackClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+                        Text(text = "Go Back", color = Color(0xFF053B50))
+                    }
+                }
+            }else{
+                Text(
+                    text =  userName.toString() + "'s Turn!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    color = Color(0xFFEEEEEE),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
         else {
             var winnerName  by remember { mutableStateOf<String?>("") }
@@ -507,6 +559,8 @@ fun onClickBottomRight(gameData: GameResponseModel, userData: UserData?, gameId:
 
 
 fun updateGameBoardAndWinDeclaration(gameId:String, boardState:List<String>, userData: UserData?, gameData: GameResponseModel) {
+
+
     val updateGameRequestModel =
         userData?.userId?.let { UpdateGameRequestModel(gameId, boardState, it) }
     val call: Call<MessageResponseModel>? = updateGameRequestModel?.let {
@@ -529,6 +583,7 @@ fun updateGameBoardAndWinDeclaration(gameId:String, boardState:List<String>, use
     })
 
     val winner:String = winCondition(boardState)
+
 
     if(winner == "x"){
         val winnerId = gameData.player1Id
