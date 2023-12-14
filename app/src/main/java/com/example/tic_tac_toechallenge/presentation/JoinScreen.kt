@@ -29,22 +29,12 @@ import com.example.tic_tac_toechallenge.R
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
 import com.example.tic_tac_toechallenge.ui.theme.TicTacToeChallengeTheme
 
-
-@Composable
-fun checkCode(gameId: String, onJoinClick:(id:String)->Unit){
-    if(gameId.length == 5)
-        onJoinClick(gameId)
-    else
-    {
-        Toast.makeText(LocalContext.current, "Code must be of 5 integers!", Toast.LENGTH_LONG).show()
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JoinScreen(onJoinClick:(id:String)->Unit, onBackClick:() -> Unit) {
     //Log.d("userData", userData.toString())
     var gameId by remember { mutableStateOf(value  = "") }
+    var con = LocalContext.current
     Box{
         Image(
             painter = painterResource(id = R.drawable.xando),
@@ -115,7 +105,14 @@ fun JoinScreen(onJoinClick:(id:String)->Unit, onBackClick:() -> Unit) {
                     //Find a Match
                     Button(
                         //onClick =  {onJoinClick(gameId)},
-                        onClick = {checkCode(gameId, onJoinClick)},
+                        onClick = {
+                            if(gameId.length == 5)
+                                onJoinClick(gameId)
+                            else
+                            {
+                                Toast.makeText(con, "Code must be of 5 integers!", Toast.LENGTH_LONG).show()
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
