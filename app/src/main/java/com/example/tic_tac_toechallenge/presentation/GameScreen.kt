@@ -303,45 +303,45 @@ fun UserTurn(userid: String, gameData: GameResponseModel, onBackClick: () -> Uni
 
         Spacer(modifier = Modifier.width(20.dp))
         if(gameData.winnerId == "") {
+            if(gameData?.boardState?.let{drawCheck(it)} == "d") {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Draw!",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        color = Color(0xFFEEEEEE),
+                        textAlign = TextAlign.Center
+                    )
 
-            Text(
-                text =  userName.toString() + "'s Turn!",
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
-                color = Color(0xFFEEEEEE),
-                textAlign = TextAlign.Center
-            )
-        }
-        else if(gameData?.boardState?.let{drawCheck(it)} == "d"){
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+                    Spacer(modifier = Modifier.width(30.dp))
+
+                    Button(
+                        onClick = onBackClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+                        Text(text = "Go Back", color = Color(0xFF053B50))
+                    }
+                }
+            }else{
                 Text(
-                    text = "Draw!",
+                    text =  userName.toString() + "'s Turn!",
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
                     color = Color(0xFFEEEEEE),
                     textAlign = TextAlign.Center
                 )
-
-                Spacer(modifier = Modifier.width(30.dp))
-
-                Button(
-                    onClick = onBackClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.back),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
-                    Text(text = "Go Back", color = Color(0xFF053B50))
-                }
             }
         }
         else {
