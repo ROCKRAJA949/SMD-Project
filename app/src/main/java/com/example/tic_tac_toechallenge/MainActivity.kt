@@ -185,7 +185,8 @@ class MainActivity : ComponentActivity() {
                             if (gameId != null) {
                                 GameScreen(
                                     userData = googleAuthUiClient.getSignedInUser(),
-                                    gameId = gameId
+                                    gameId = gameId,
+                                    onBackClick = {navController.popBackStack()}
                                 )
                             }
                         }
