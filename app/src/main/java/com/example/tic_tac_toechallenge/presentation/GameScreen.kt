@@ -30,6 +30,7 @@ import com.example.tic_tac_toechallenge.presentation.authentication.JoinGameRequ
 import com.example.tic_tac_toechallenge.presentation.authentication.MessageResponseModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UpdateGameRequestModel
 import com.example.tic_tac_toechallenge.presentation.authentication.UserResponseModel
+import com.example.tic_tac_toechallenge.presentation.authentication.UserScoreUpdateModel
 import com.example.tic_tac_toechallenge.presentation.authentication.WinnerRequestModel
 import com.example.tic_tac_toechallenge.presentation.network.RetrofitInstance
 import com.example.tic_tac_toechallenge.presentation.sign_in.UserData
@@ -604,6 +605,48 @@ fun updateGameBoardAndWinDeclaration(gameId:String, boardState:List<String>, use
                 }
             }
         })
+
+        val updateWinsModel: UserScoreUpdateModel = UserScoreUpdateModel(gameData.player1Id)
+        val updateWinnerCall: Call<MessageResponseModel> = RetrofitInstance.apiService.incrementWins(updateWinsModel)
+        updateWinnerCall!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+                Log.d("Message from api", response.message())
+
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                // we get error response from API.
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+
+        val updateLossesModel: UserScoreUpdateModel? = gameData.player2Id?.let {
+            UserScoreUpdateModel(
+                it
+            )
+        }
+        val updateLossesCall: Call<MessageResponseModel>? = updateLossesModel?.let {
+            RetrofitInstance.apiService.incrementLosses(
+                it
+            )
+        }
+
+        updateLossesCall!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+                Log.d("Message from api", response.message())
+
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                // we get error response from API.
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+
     }
     else if (winner == "o") {
         val winnerId = gameData.player2Id
@@ -628,6 +671,39 @@ fun updateGameBoardAndWinDeclaration(gameId:String, boardState:List<String>, use
                 }
             }
         })
+        val updateWinsModel: UserScoreUpdateModel = UserScoreUpdateModel(gameData.player2Id)
+        val updateWinnerCall: Call<MessageResponseModel> = RetrofitInstance.apiService.incrementWins(updateWinsModel)
+        updateWinnerCall!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+                Log.d("Message from api", response.message())
+
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                // we get error response from API.
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+
+        val updateLossesModel: UserScoreUpdateModel = UserScoreUpdateModel(gameData.player1Id)
+        val updateLossesCall: Call<MessageResponseModel> = RetrofitInstance.apiService.incrementLosses(updateLossesModel)
+
+        updateLossesCall!!.enqueue(object : Callback<MessageResponseModel?> {
+            override fun onResponse(call: Call<MessageResponseModel?>?, response: Response<MessageResponseModel?>) {
+                Log.d("Message from api", response.message())
+
+            }
+
+            override fun onFailure(call: Call<MessageResponseModel?>?, t: Throwable) {
+                // we get error response from API.
+                if(t.message != null) {
+                    Log.d("Error found is : ", t.message!!)
+                }
+            }
+        })
+
     }
     else {
         //do nothing
