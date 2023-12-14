@@ -74,22 +74,22 @@ fun winCondition(board: List<String>): String{
     return "0";
 }
 
-@Composable
-fun playerJoinToast(context: Context, player2Id: String) {
-    var joiner by remember { mutableStateOf<String?>("") }
-    fetchData(player2Id){result ->
-        result.onSuccess {
-            joiner = it.username + "has joined!"
-            Log.d("received User Name for toast",it.username.toString())
-        }
-        result.onFailure { error ->
-            ""
-            Log.d("toast failure", error.toString())
-        }
-
-    }
-    Toast.makeText(context, joiner, Toast.LENGTH_LONG).show()
-}
+//@Composable
+//fun playerJoinToast(context: Context, player2Id: String) {
+//    var joiner by remember { mutableStateOf<String>("123") }
+//    fetchData(player2Id){result ->
+//        result.onSuccess {
+//            joiner = it.username!!
+//            Log.d("received User Name for toast", joiner)
+//            Toast.makeText(context, joiner + " has joined!", Toast.LENGTH_LONG).show()
+//        }
+//        result.onFailure { error ->
+//            Log.d("toast failure", error.toString())
+//        }
+//
+//    }
+//
+//}
 
 @Composable
 fun GameScreen( userData: UserData?, gameId: String, onBackClick: ()-> Unit) {
@@ -98,6 +98,7 @@ fun GameScreen( userData: UserData?, gameId: String, onBackClick: ()-> Unit) {
         mutableStateOf("")
     }
     var gameData by remember { mutableStateOf<GameResponseModel?>(null) }
+    var toastCount by remember { mutableStateOf<Int>(0)}
     LaunchedEffect(gameId){
         if(gameId == "empty"){
             val r = Random(System.currentTimeMillis())
@@ -223,11 +224,14 @@ fun GameScreen( userData: UserData?, gameId: String, onBackClick: ()-> Unit) {
             )
             gameData?.let { TicTacToeBoard(it, userData, id.value) }
 
+//            if(gameData?.player2Id?.length === 28){
+//                Log.d("lenght of player 2 id ", gameData?.player2Id?.length.toString())
+//                toastCount++;
+//                playerJoinToast(LocalContext.current, gameData?.player2Id!!)
+//            }
 
             gameData?.let{ UserTurn(it.turn, it, onBackClick) }
-            if(gameData?.player2Id?.length == 29){
-                playerJoinToast(LocalContext.current, gameData?.player2Id.toString())
-            }
+
         }
     }
 }
@@ -293,39 +297,57 @@ fun UserTurn(userid: String, gameData: GameResponseModel, onBackClick: () -> Uni
             fetchData(gameData.winnerId){result ->
                 result.onSuccess {
                     winnerName =it.username
-                    Log.d("received User Name for turn",it.username.toString())
+                    Log.d("received User Name for winner",it.username.toString())
                 }
                 result.onFailure { error ->
                     ""
-                    Log.d("turn user name failure", error.toString())
+                    Log.d("winner user name failure", error.toString())
                 }
 
             }
-            Text(
-                text =  winnerName.toString() + " Wins!",
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
-                color = Color(0xFFEEEEEE),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Button(
-                onClick =  onBackClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.back),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
-                Text(text = "Exit", color = Color(0xFF053B50))
+                if(winnerName != ""){
+                    Text(
+                        text =  winnerName.toString() + " Wins!",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        color = Color(0xFFEEEEEE),
+                        textAlign = TextAlign.Center
+                    )
+                }
+                else{
+                    Text(
+                        text =  "Loading...",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        color = Color(0xFFEEEEEE),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+
+                Spacer(modifier = Modifier.width(30.dp))
+
+                Button(
+                    onClick =  onBackClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(Color(0xFFEEEEEE))
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.back),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and image
+                    Text(text = "Go Back", color = Color(0xFF053B50))
+                }
             }
+
         }
     }
 
