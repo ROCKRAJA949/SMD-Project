@@ -192,9 +192,7 @@ fun GameScreen( userData: UserData?, gameId: String, onBackClick: ()-> Unit) {
             }
         }
     }
-    if(gameData?.player2Id != ""){
-        playerJoinToast(LocalContext.current, gameData?.player2Id.toString())
-    }
+
 
     Box(
         modifier = Modifier
@@ -227,6 +225,9 @@ fun GameScreen( userData: UserData?, gameId: String, onBackClick: ()-> Unit) {
 
 
             gameData?.let{ UserTurn(it.turn, it, onBackClick) }
+            if(gameData?.player2Id?.length == 29){
+                playerJoinToast(LocalContext.current, gameData?.player2Id.toString())
+            }
         }
     }
 }
